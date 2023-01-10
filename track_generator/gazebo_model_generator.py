@@ -60,6 +60,13 @@ class GazeboModelGenerator:
         )
         write(os.path.join(self.track_directory, 'model.config'), output)
 
+    def generate_example_world(self, track: Track):
+        template = Template(read('gazebo_model_templates/example.world.template'))
+        output = template.substitute(
+            name=self.track_name
+        )
+        write(os.path.join(self.gazebo_models_directory, 'example.world'), output)
+
     def generate_setup_script(self):
         output = read('gazebo_model_templates/setup.bash.template')
         write(os.path.join(self.gazebo_models_directory, 'setup.bash'), output)
@@ -69,5 +76,6 @@ class GazeboModelGenerator:
         self.generate_track_material()
         self.generate_track_sdf(track)
         self.generate_track_config(track)
+        self.generate_example_world(track)
         self.generate_setup_script()
 

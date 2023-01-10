@@ -26,12 +26,12 @@ def read_track(xml_input_file_path: str) -> Track:
     root = tree.getroot()
 
     version = _read_root(root)
-    width, height = _read_size(root)
+    width, height, lanes = _read_size(root)
     x, y = _read_origin(root)
     background_color, background_opacity = _read_background(root)
     segments = _read_segments(root)
 
-    return Track(version, width, height, (x, y), background_color, background_opacity, segments)
+    return Track(version, width, height, lanes, (x, y), background_color, background_opacity, segments)
 
 
 def _read_root(root: ET.Element) -> str:
@@ -43,8 +43,7 @@ def _read_root(root: ET.Element) -> str:
     return version
 
 
-def _read_size(root: ET.Element) -> Tuple[float, float]:
-
+def _read_size(root: ET.Element) -> Tuple[float, float, float]:
     size_element = root.find('Size')
 
     if size_element is None:
@@ -52,6 +51,7 @@ def _read_size(root: ET.Element) -> Tuple[float, float]:
 
     width = size_element.get('width')
     height = size_element.get('height')
+    lanes = size_element.get('lanes')
 
     if width is None:
         raise AttributeMissingException('width', size_element)
@@ -59,11 +59,13 @@ def _read_size(root: ET.Element) -> Tuple[float, float]:
     if height is None:
         raise AttributeMissingException('height', size_element)
 
-    return float(width), float(height)
+    if height is None:
+        raise AttributeMissingException('lanes', size_element)
+
+    return float(width), float(height), float(lanes)
 
 
 def _read_origin(root: ET.Element) -> Tuple[float, float]:
-
     origin_element = root.find('Origin')
 
     if origin_element is None:
@@ -82,7 +84,6 @@ def _read_origin(root: ET.Element) -> Tuple[float, float]:
 
 
 def _read_background(root: ET.Element) -> Tuple[str, float]:
-
     background_element = root.find('Background')
 
     if background_element is None:
@@ -101,7 +102,6 @@ def _read_background(root: ET.Element) -> Tuple[str, float]:
 
 
 def _read_segments(root: ET.Element):
-
     segments_element = root.find("Segments")
 
     if segments_element is None:
@@ -182,10 +182,19 @@ def _read_crosswalk_element(crosswalk_element: ET.Element):
 
 def _read_intersection_element(intersection_element: ET.Element):
     length = intersection_element.get('length')
+    oneway = intersection_element.get('oneway')
+    stopped_lanes = intersection_element.get('stopped_lanes')
 
     if length is None:
         raise AttributeMissingException('length', intersection_element)
-    return Intersection(float(length))
+    if oneway is None:
+        raise AttributeMissingException('oneway', intersection_element)
+    if stopped_lanes is None and oneway != 'yes':
+        raise AttributeMissingException('stopped_lanes', intersection_element)
+
+    ow = True if oneway == 'yes' else False
+
+    return Intersection(float(length), ow, float(stopped_lanes))
 
 
 def _read_gap_element(straight_element: ET.Element):
@@ -243,5 +252,10 @@ def _read_traffic_island_element(traffic_island_element: ET.Element):
     crosswalk_length = traffic_island_element.get('crosswalk_length')
     curve_segment_length = traffic_island_element.get('curve_segment_length')
     curvature = traffic_island_element.get('curvature')
+    left_lanes = traffic_island_element.get('left_lanes')
 
-    return TrafficIsland(float(island_width), float(crosswalk_length), float(curve_segment_length), float(curvature))
+    if left_lanes is None:
+        raise AttributeMissingException('left_lanes', traffic_island_element)
+
+    return TrafficIsland(float(island_width), float(crosswalk_length), float(curve_segment_length), float(curvature),
+                         float(left_lanes))

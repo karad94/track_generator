@@ -20,7 +20,7 @@ def _get_track_name_from_file_path(file_path: str) -> str:
 def generate_track(track_files: List[str], root_output_directory: str, generate_png=False,
                    generate_gazebo_project=False) -> List[str]:
     """
-    Generate tracks (SVG, Gazebo project, etc) from given track files (XML)
+    Generate tracks (SVG, Gazebo project, etc.) from given track files (XML)
     :param track_files: List of track files
     :param root_output_directory: The output directory to write results to. Subdirectories for every track will be
     generated.
@@ -31,7 +31,7 @@ def generate_track(track_files: List[str], root_output_directory: str, generate_
     track_output_directories: List[str] = []
     for track_file in track_files:
         track = xml_reader.read_track(track_file)
-        track.calc()
+        track.calc(track)
 
         track_name = _get_track_name_from_file_path(track_file)
         track_output_directory = os.path.join(root_output_directory, track_name)

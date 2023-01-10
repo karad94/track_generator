@@ -1,0 +1,39 @@
+<TrackDefinition version="0.0.1">
+    <Size width="10.0" height="10.0" lanes="4"/>
+    <Origin x="0" y="0"/>
+    <Background color="#545454" opacity="1.0"/>
+    <Segments>
+        <Start x="2" y="6" direction_angle="90.0"/>
+        <Straight length="12.280"/>
+        <Crosswalk length="0.800"/>
+        <Turn direction="right" radius="1.5" radian="90.0"/>
+        <Straight length="12.500"/>
+        <Turn direction="right" radius="1.5" radian="180"/>
+        <Straight length="1.600"/>
+        <Crosswalk length="0.800"/>
+        <Straight length="1.600"/>
+        <Turn direction="left" radius="1.5" radian="180"/>
+        <Straight length="4.000"/>
+        <Turn direction="right" radius="1.5" radian="135.0"/>
+        <Straight length="2.0"/>
+        <Intersection length="3.200" oneway="no" stopped_lanes="1"/>
+        <Straight length="2.0"/>
+        <Turn direction="right" radius="1.5" radian="45.0"/>
+        <Straight length="4.0"/>
+        <Turn direction="right" radius="1.5" radian="90.0"/>
+        <Straight length="2.0"/>
+        <Turn direction="right" radius="1.5" radian="90.0"/>
+        <Crosswalk length="0.400"/>
+        <Straight length="4.580"/>
+        <Turn direction="right" radius="1.5" radian="45.0"/>
+        <Straight length="0.630"/>
+        <Gap length="3.200"/>
+        <Straight length="4.0"/>
+        <Turn direction="right" radius="1.5" radian="135.0"/>
+        <Straight length="4.213"/>
+        <TrafficIsland island_width="1.5" crosswalk_length="1.5" curve_segment_length="2.0" curvature="1.0" left_lanes="2"/>
+        <Straight length="4.213"/>
+        <Turn direction="right" radius="1.5" radian="90.0"/>
+        <Straight length="1.550"/>
+    </Segments>
+</TrackDefinition>

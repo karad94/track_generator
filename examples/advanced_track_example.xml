@@ -1,29 +1,29 @@
 <TrackDefinition version="0.0.1">
-    <Size width="10.0" height="10.0" lanes="2"/>
+    <Size width="10.0" height="10.0"/>
     <Origin x="0" y="0"/>
     <Background color="#545454" opacity="1.0"/>
     <Segments>
         <Start x="1.0" y="2.0" direction_angle="90.0"/>
         <Straight length="6.140"/>
-        <Crosswalk length="0.400"/>
+        <Crosswalk/>
         <Turn direction="right" radius="1.0" radian="90.0"/>
         <Straight length="6.0"/>
         <Turn direction="right" radius="0.750" radian="180"/>
         <Straight length="0.800"/>
-        <Crosswalk length="0.400"/>
+        <Crosswalk/>
         <Straight length="0.800"/>
         <Turn direction="left" radius="0.750" radian="180"/>
         <Straight length="2.0"/>
         <Turn direction="right" radius="1.0" radian="135.0"/>
         <Straight length="1.0"/>
-        <Intersection length="1.600" oneway="no" stopped_lanes="1"/>
+        <Intersection/>
         <Straight length="1.0"/>
         <Turn direction="right" radius="1.0" radian="45.0"/>
         <Straight length="2.0"/>
         <Turn direction="right" radius="1.0" radian="90.0"/>
         <Straight length="1.0"/>
         <Turn direction="right" radius="1.0" radian="90.0"/>
-        <Crosswalk length="0.400"/>
+        <Crosswalk/>
         <Straight length="1.730"/>
         <Turn direction="right" radius="1.0" radian="45.0"/>
         <Straight length="0.820"/>
