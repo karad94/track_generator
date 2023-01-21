@@ -4,7 +4,7 @@ from enum import Enum
 from math import tan
 from typing import Any, List, Tuple, Optional
 
-from track_generator.coordinate_system import Polygon, Point2d, CartesianSystem2d
+from coordinate_system import Polygon, Point2d, CartesianSystem2d
 
 LINE_WIDTH = 0.020
 DEFAULT_LANE_WIDTH = 0.400
@@ -406,21 +406,12 @@ class TrafficIsland(Segment):
         self.crosswalk_lines_polygons: List[Polygon] = []
         self.lane_line_polygons: List[Polygon] = []
 
-    def calc_lane(self, side: Side, track: Track):
-        side_factor = 1 if side == Side.LEFT else -1
+    # Calculation Traffic-Island left side
+    def calc_left_lane(self, track: Track):
+        zero_side = LINE_WIDTH if track. lanes - self.left_lanes == 0 else 0
 
-        self.line_polygons.append([
-            Point2d(0.0, +track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes,
-                    self.start_coordinate_system),
-            Point2d(self.curve_segment_length, side_factor * self.island_width / 2, self.start_coordinate_system),
-            Point2d(self.curve_segment_length + self.crosswalk_length, side_factor * self.island_width / 2,
-                    self.start_coordinate_system),
-            Point2d(2 * self.curve_segment_length + self.crosswalk_length,
-                    +track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes,
-                    self.start_coordinate_system)
-        ])
-
-        if side_factor == 1:
+        # Calculation of lane boundary
+        if self.left_lanes:
             self.line_polygons.append([
                 Point2d(0.0, track.line_offset, self.start_coordinate_system),
                 Point2d(self.curve_segment_length,
@@ -432,22 +423,41 @@ class TrafficIsland(Segment):
                 Point2d(2 * self.curve_segment_length + self.crosswalk_length, track.line_offset,
                         self.start_coordinate_system)
             ])
-            for i in range(1, int(self.left_lanes)):
-                self.lane_line_polygons.append([
-                    Point2d(0.0, track.track_width / 2 - (DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
-                    Point2d(self.curve_segment_length,
-                            self.island_width / 2 + (DEFAULT_LANE_WIDTH * self.left_lanes) - LINE_WIDTH - (DEFAULT_LANE_WIDTH * i),
-                            self.start_coordinate_system)
-                ])
-                self.lane_line_polygons.append([
-                    Point2d(self.curve_segment_length + self.crosswalk_length,
-                            self.island_width / 2 + (DEFAULT_LANE_WIDTH * self.left_lanes) - LINE_WIDTH - (DEFAULT_LANE_WIDTH * i),
-                            self.start_coordinate_system),
-                    Point2d(2 * self.curve_segment_length + self.crosswalk_length,
-                            track.track_width / 2 - (DEFAULT_LANE_WIDTH * i),
-                            self.start_coordinate_system)
-                ])
-        else:
+            self.line_polygons.append([
+                Point2d(0.0, track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes + zero_side,
+                        self.start_coordinate_system),
+                Point2d(self.curve_segment_length, self.island_width / 2, self.start_coordinate_system),
+                Point2d(self.curve_segment_length + self.crosswalk_length, self.island_width / 2,
+                        self.start_coordinate_system),
+                Point2d(2 * self.curve_segment_length + self.crosswalk_length,
+                        +track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes + zero_side,
+                        self.start_coordinate_system)
+            ])
+        # Calculation of Lane-Marking Coordinates
+        for i in range(1, int(self.left_lanes)):
+            self.lane_line_polygons.append([
+                Point2d(0.0, track.track_width / 2 - (DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
+                Point2d(self.curve_segment_length,
+                        self.island_width / 2 + (DEFAULT_LANE_WIDTH * self.left_lanes) - LINE_WIDTH - (
+                                    DEFAULT_LANE_WIDTH * i),
+                        self.start_coordinate_system)
+            ])
+            self.lane_line_polygons.append([
+                Point2d(self.curve_segment_length + self.crosswalk_length,
+                        self.island_width / 2 + (DEFAULT_LANE_WIDTH * self.left_lanes) - LINE_WIDTH - (
+                                    DEFAULT_LANE_WIDTH * i),
+                        self.start_coordinate_system),
+                Point2d(2 * self.curve_segment_length + self.crosswalk_length,
+                        track.track_width / 2 - (DEFAULT_LANE_WIDTH * i),
+                        self.start_coordinate_system)
+            ])
+
+    # Calculation Traffic-Island right side
+    def calc_right_lane(self, track: Track):
+        zero_side = LINE_WIDTH if self.left_lanes == 0 else 0
+
+        # Calculation of lane boundary
+        if track.lanes - self.left_lanes:
             self.line_polygons.append([
                 Point2d(0.0, -track.line_offset, self.start_coordinate_system),
                 Point2d(self.curve_segment_length,
@@ -459,20 +469,34 @@ class TrafficIsland(Segment):
                 Point2d(2 * self.curve_segment_length + self.crosswalk_length, -track.line_offset,
                         self.start_coordinate_system)
             ])
-            for i in range(1, int(track.lanes - self.left_lanes)):
-                self.lane_line_polygons.append([
-                    Point2d(0.0, -(track.track_width / 2 - DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
-                    Point2d(self.curve_segment_length,
-                            -(self.island_width / 2 + DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes) - LINE_WIDTH - (DEFAULT_LANE_WIDTH * i)),
-                            self.start_coordinate_system)
-                    ])
-                self.lane_line_polygons.append([
-                    Point2d(self.curve_segment_length + self.crosswalk_length, -(self.island_width / 2 + DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes) - LINE_WIDTH - (DEFAULT_LANE_WIDTH * i)),
-                            self.start_coordinate_system),
-                    Point2d(2 * self.curve_segment_length + self.crosswalk_length,
-                            -(track.track_width / 2 - (DEFAULT_LANE_WIDTH * i)),
-                            self.start_coordinate_system)
-                ])
+            self.line_polygons.append([
+                Point2d(0.0, track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes - zero_side,
+                        self.start_coordinate_system),
+                Point2d(self.curve_segment_length, -(self.island_width / 2), self.start_coordinate_system),
+                Point2d(self.curve_segment_length + self.crosswalk_length, -(self.island_width / 2),
+                        self.start_coordinate_system),
+                Point2d(2 * self.curve_segment_length + self.crosswalk_length,
+                        +track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes - zero_side,
+                        self.start_coordinate_system)
+            ])
+        # Calculation of Lane-Marking Coordinates
+        for i in range(1, int(track.lanes - self.left_lanes)):
+            self.lane_line_polygons.append([
+                Point2d(0.0, -(track.track_width / 2 - DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
+                Point2d(self.curve_segment_length,
+                        -(self.island_width / 2 + DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes) - LINE_WIDTH - (
+                                    DEFAULT_LANE_WIDTH * i)),
+                        self.start_coordinate_system)
+            ])
+            self.lane_line_polygons.append([
+                Point2d(self.curve_segment_length + self.crosswalk_length, -(
+                            self.island_width / 2 + DEFAULT_LANE_WIDTH * (
+                                track.lanes - self.left_lanes) - LINE_WIDTH - (DEFAULT_LANE_WIDTH * i)),
+                        self.start_coordinate_system),
+                Point2d(2 * self.curve_segment_length + self.crosswalk_length,
+                        -(track.track_width / 2 - (DEFAULT_LANE_WIDTH * i)),
+                        self.start_coordinate_system)
+            ])
 
     def calc_background(self, track: Track):
         self.background_polygon = [
@@ -497,20 +521,22 @@ class TrafficIsland(Segment):
         ]
 
     def calc_crosswalk_lines(self, track: Track):
-        self.crosswalk_lines_polygons = calc_crosswalk_lines(
-            self.crosswalk_length, (DEFAULT_LANE_WIDTH * self.left_lanes) - LINE_WIDTH, CartesianSystem2d(
-                self.curve_segment_length, + ((self.island_width + DEFAULT_LANE_WIDTH * self.left_lanes) / 2), 0.0,
-                self.start_coordinate_system
+        if self.left_lanes:
+            self.crosswalk_lines_polygons = calc_crosswalk_lines(
+                self.crosswalk_length, (DEFAULT_LANE_WIDTH * self.left_lanes) - LINE_WIDTH, CartesianSystem2d(
+                    self.curve_segment_length, + ((self.island_width + DEFAULT_LANE_WIDTH * self.left_lanes) / 2), 0.0,
+                    self.start_coordinate_system
+                )
             )
-        )
-
-        self.crosswalk_lines_polygons = self.crosswalk_lines_polygons + calc_crosswalk_lines(
-            self.crosswalk_length, (DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes)) - LINE_WIDTH, CartesianSystem2d(
-                self.curve_segment_length,
-                - (self.island_width / 2 + DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes) / 2), 0.0,
-                self.start_coordinate_system
+        if track.lanes - self.left_lanes:
+            self.crosswalk_lines_polygons = self.crosswalk_lines_polygons + calc_crosswalk_lines(
+                self.crosswalk_length, (DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes)) - LINE_WIDTH,
+                CartesianSystem2d(
+                    self.curve_segment_length,
+                    - (self.island_width / 2 + DEFAULT_LANE_WIDTH * (track.lanes - self.left_lanes) / 2), 0.0,
+                    self.start_coordinate_system
+                )
             )
-        )
 
     def calc(self, prev_segment, track: Track):
         super().calc(prev_segment, track)
@@ -518,6 +544,6 @@ class TrafficIsland(Segment):
         self.end_coordinate_system = CartesianSystem2d(overall_length, 0.0, 0.0, self.start_coordinate_system)
 
         self.calc_background(track)
-        self.calc_lane(Side.LEFT, track)
-        self.calc_lane(Side.RIGHT, track)
+        self.calc_left_lane(track)
+        self.calc_right_lane(track)
         self.calc_crosswalk_lines(track)

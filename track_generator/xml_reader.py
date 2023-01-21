@@ -1,24 +1,7 @@
 # Copyright (C) 2022 twyleg
 import xml.etree.ElementTree as ET
-from track_generator.track import *
-
-
-class ElementMissingException(Exception):
-    def __init__(self, element_name: str, parent_element: ET.Element):
-        self.element_name = element_name
-        self.parent_element = parent_element
-
-    def __str__(self):
-        return f'ElementMissingException: missing element="{self.element_name}" in parent element "{self.parent_element.tag}"'
-
-
-class AttributeMissingException(Exception):
-    def __init__(self, attribute_name: str, element: ET.Element):
-        self.attribute_name = attribute_name
-        self.element = element
-
-    def __str__(self):
-        return f'AttributeMissingException: missing attribute="{self.attribute_name}" in element "{self.element.tag}""'
+from track import *
+from errorhandling import ElementMissingException, AttributeMissingException
 
 
 def read_track(xml_input_file_path: str) -> Track:

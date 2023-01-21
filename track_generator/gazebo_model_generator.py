@@ -1,6 +1,6 @@
 # Copyright (C) 2022 twyleg
 import os
-from track_generator.track import Track
+from track import Track
 from string import Template
 from typing import Optional
 
@@ -60,7 +60,7 @@ class GazeboModelGenerator:
         )
         write(os.path.join(self.track_directory, 'model.config'), output)
 
-    def generate_example_world(self, track: Track):
+    def generate_example_world(self):
         template = Template(read('gazebo_model_templates/example.world.template'))
         output = template.substitute(
             name=self.track_name
@@ -76,6 +76,6 @@ class GazeboModelGenerator:
         self.generate_track_material()
         self.generate_track_sdf(track)
         self.generate_track_config(track)
-        self.generate_example_world(track)
+        self.generate_example_world()
         self.generate_setup_script()
 

@@ -4,8 +4,8 @@ import math
 import drawSvg as draw
 
 from typing import Optional
-from track_generator.track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
-from track_generator.coordinate_system import Point2d, Polygon
+from track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
+from coordinate_system import Point2d, Polygon
 
 DEFAULT_LINE_WIDTH = 0.020
 DEFAULT_LANE_WIDTH = 0.400

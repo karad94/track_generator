@@ -2,9 +2,10 @@
 import os
 from typing import List
 
-from track_generator import xml_reader
-from track_generator.painter import Painter
-from track_generator.gazebo_model_generator import GazeboModelGenerator
+import xml_reader
+from painter import Painter
+from gazebo_model_generator import GazeboModelGenerator
+from errorhandling import TrackCheck
 
 
 def _create_output_directory_if_required(output_directory):
@@ -32,6 +33,9 @@ def generate_track(track_files: List[str], root_output_directory: str, generate_
     for track_file in track_files:
         track = xml_reader.read_track(track_file)
         track.calc(track)
+
+        check = TrackCheck()
+        check.check_track(track)
 
         track_name = _get_track_name_from_file_path(track_file)
         track_output_directory = os.path.join(root_output_directory, track_name)
