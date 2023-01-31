@@ -4,7 +4,7 @@ from enum import Enum
 from math import tan
 from typing import Any, List, Tuple, Optional
 
-from coordinate_system import Polygon, Point2d, CartesianSystem2d
+from track_generator.coordinate_system import Polygon, Point2d, CartesianSystem2d
 
 LINE_WIDTH = 0.020
 DEFAULT_LANE_WIDTH = 0.400
@@ -110,21 +110,25 @@ class Straight(Segment):
         super().calc(prev_segment, track)
         self.end_coordinate_system = CartesianSystem2d(self.length, 0.0, 0.0, self.start_coordinate_system)
 
+        # Calculate coordinate for painting road surface
         self.track_ground_polygon = [
             Point2d(0.0, 0.0, self.start_coordinate_system),
             Point2d(self.length, 0.0, self.start_coordinate_system)
         ]
 
+        # Calculate coordinate for painting left road boundary
         self.left_line_polygon = [
             Point2d(0.0, -track.line_offset, self.start_coordinate_system),
             Point2d(self.length, -track.line_offset, self.start_coordinate_system)
         ]
 
+        # Calculate coordinate for painting right road boundary
         self.right_line_polygon = [
             Point2d(0.0, +track.line_offset, self.start_coordinate_system),
             Point2d(self.length, +track.line_offset, self.start_coordinate_system)
         ]
 
+        # Calculate coordinate for lane markings
         for i in (range(1, int(track.lanes))):
             self.lane_line_list.append([
                 Point2d(0.0, -track.track_width / 2 + (DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
@@ -158,14 +162,17 @@ class Arc(Segment):
         signed_radian_angle = -self.radian_angle if self.direction_clockwise else self.radian_angle
         center_offset = self.radius if self.direction_clockwise else -self.radius
 
+        # Calculate center coordinate for Arc drawing
         center_coordinate_system = CartesianSystem2d(0.0, -center_offset, signed_radian_angle,
                                                      self.start_coordinate_system)
         self.end_coordinate_system = CartesianSystem2d(0.0, center_offset, 0.0, center_coordinate_system)
 
+        # Calculate start-coordinates of Turn.
         self.start_point_center = Point2d(0.0, 0.0, self.start_coordinate_system)
         self.start_point_left = Point2d(0.0, -track.line_offset, self.start_coordinate_system)
         self.start_point_right = Point2d(0.0, +track.line_offset, self.start_coordinate_system)
 
+        # Calculate end-coordinates of Turn
         self.end_point_center = Point2d(0.0, 0.0, self.end_coordinate_system)
         self.center_point = Point2d(0.0, 0.0, center_coordinate_system)
 
@@ -180,6 +187,7 @@ class Crosswalk(Straight):
 
     def calc(self, prev_segment, track: Track) -> None:
         super().calc(prev_segment, track)
+        # Calculate Crosswalk polygons by calling function calc_crosswalk_lines
         self.line_polygons = calc_crosswalk_lines(self.length, track.track_width - LINE_WIDTH,
                                                   self.start_coordinate_system)
 
@@ -195,6 +203,7 @@ class Intersection(Segment):
         self.stop_line_polygons: List[Polygon] = []
         self.center_line_polygons: List[Polygon] = []
 
+    # Calculate coordinates to draw road surface
     def calc_base_lines(self) -> None:
         self.base_line_polygons.append([
             Point2d(0.0, 0.0, self.start_coordinate_system),
@@ -205,6 +214,7 @@ class Intersection(Segment):
             Point2d(self.length / 2, +self.length / 2, self.start_coordinate_system),
         ])
 
+    # Calculate coordinate of road boundaries
     def calc_corner_lines(self, track: Track) -> None:
         center_x = self.length / 2.0
 
@@ -232,6 +242,7 @@ class Intersection(Segment):
             Point2d(center_x + track.line_offset, +self.length / 2, self.start_coordinate_system),
         ])
 
+    # Calculate coordinates of the stop lines. If OneWay is "YES" two lines over the whole Road will be drawn
     def calc_stop_lines(self, track: Track) -> None:
         center_x = self.length / 2.0
 
@@ -260,6 +271,7 @@ class Intersection(Segment):
                         self.start_coordinate_system),
             ])
 
+    # Calculate coordinates for lane markings
     def calc_center_lines(self, track: Track) -> None:
         center_x = self.length / 2.0
 
@@ -410,7 +422,7 @@ class TrafficIsland(Segment):
     def calc_left_lane(self, track: Track):
         zero_side = LINE_WIDTH if track. lanes - self.left_lanes == 0 else 0
 
-        # Calculation of lane boundary
+        # Calculation of road boundary on the left side of TrafficIsland
         if self.left_lanes:
             self.line_polygons.append([
                 Point2d(0.0, track.line_offset, self.start_coordinate_system),
@@ -433,7 +445,7 @@ class TrafficIsland(Segment):
                         +track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes + zero_side,
                         self.start_coordinate_system)
             ])
-        # Calculation of Lane-Marking Coordinates
+        # Calculate coordinates of lane markings on the left side of TrafficIsland
         for i in range(1, int(self.left_lanes)):
             self.lane_line_polygons.append([
                 Point2d(0.0, track.track_width / 2 - (DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
@@ -456,7 +468,7 @@ class TrafficIsland(Segment):
     def calc_right_lane(self, track: Track):
         zero_side = LINE_WIDTH if self.left_lanes == 0 else 0
 
-        # Calculation of lane boundary
+        # Calculation of road boundary on the right side of TrafficIsland
         if track.lanes - self.left_lanes:
             self.line_polygons.append([
                 Point2d(0.0, -track.line_offset, self.start_coordinate_system),
@@ -479,7 +491,7 @@ class TrafficIsland(Segment):
                         +track.track_width / 2 - DEFAULT_LANE_WIDTH * self.left_lanes - zero_side,
                         self.start_coordinate_system)
             ])
-        # Calculation of Lane-Marking Coordinates
+        # Calculate coordinates of lane markings on the right side of TrafficIsland
         for i in range(1, int(track.lanes - self.left_lanes)):
             self.lane_line_polygons.append([
                 Point2d(0.0, -(track.track_width / 2 - DEFAULT_LANE_WIDTH * i), self.start_coordinate_system),
@@ -498,6 +510,7 @@ class TrafficIsland(Segment):
                         self.start_coordinate_system)
             ])
 
+    # Calculate coordinates to draw road surface
     def calc_background(self, track: Track):
         self.background_polygon = [
             Point2d(0.0, track.track_width / 2, self.start_coordinate_system),

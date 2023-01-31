@@ -2,10 +2,10 @@
 import os
 from typing import List
 
-import xml_reader
-from painter import Painter
-from gazebo_model_generator import GazeboModelGenerator
-from errorhandling import TrackCheck
+from track_generator import xml_reader
+from track_generator.painter import Painter
+from track_generator.gazebo_model_generator import GazeboModelGenerator
+from track_generator.errorhandling import TrackCheck
 
 
 def _create_output_directory_if_required(output_directory):
@@ -31,17 +31,21 @@ def generate_track(track_files: List[str], root_output_directory: str, generate_
     """
     track_output_directories: List[str] = []
     for track_file in track_files:
+        # read track definition and start of coordinate calculation
         track = xml_reader.read_track(track_file)
         track.calc(track)
 
+        # Check for errors in track definition
         check = TrackCheck()
         check.check_track(track)
 
+        # generate output directory
         track_name = _get_track_name_from_file_path(track_file)
         track_output_directory = os.path.join(root_output_directory, track_name)
         _create_output_directory_if_required(track_output_directory)
         track_output_directories.append(track_output_directory)
 
+        # generate svg output and gazebo model
         painter = Painter()
         painter.draw_track(track)
         painter.save_svg(track_name, track_output_directory)

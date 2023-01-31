@@ -3,7 +3,7 @@ import os
 import argparse
 import sys
 
-import generator
+from track_generator import generator
 
 VERSION = '0.0.1'
 

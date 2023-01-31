@@ -4,8 +4,8 @@ import math
 import drawSvg as draw
 
 from typing import Optional
-from track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
-from coordinate_system import Point2d, Polygon
+from track_generator.track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
+from track_generator.coordinate_system import Point2d, Polygon
 
 DEFAULT_LINE_WIDTH = 0.020
 DEFAULT_LANE_WIDTH = 0.400
@@ -13,7 +13,10 @@ DEFAULT_LINE_OFFSET = DEFAULT_LANE_WIDTH - DEFAULT_LINE_WIDTH
 
 
 class Painter:
-
+    """
+    Usage of Package drawSvg to draw road with the coordinates that were calculated in track.py
+    Each segment will be drawn in his own function.
+    """
     def __init__(self):
         self.d: Optional[draw.Drawing] = None
 
@@ -25,6 +28,7 @@ class Painter:
             p1 = polygon[i]
             self.d.append(draw.Line(p0.x_w, p0.y_w, p1.x_w, p1.y_w, **kwargs))
 
+    # draw_point is used in _verbose file to draw coordinate points
     def draw_point(self, p: Point2d):
         self.d.append(draw.Circle(p.x_w,
                                   p.y_w,
@@ -33,6 +37,7 @@ class Painter:
 
         self.d.append(draw.Text(f'{p.x_w:.3f}\n{p.y_w:.3f}', 0.1, p.x_w + 0.032, p.y_w, fill='red'))
 
+    # draw_arc_center_point is used in draw_arc as center coordinate
     def draw_arc_center_point(self, p: Point2d, radian_angle, radius):
         self.d.append(draw.Circle(p.x_w,
                                   p.y_w,
@@ -48,14 +53,16 @@ class Painter:
 
     def draw_straight(self, segment: Straight, track: Track):
 
+        # Draw road surface in Segment Straight
         self.draw_polygon(segment.track_ground_polygon, fill='#eeee00', stroke='black',
                           stroke_width=track.track_width)
 
+        # Draw lane markings in Segment Straight
         for polygon in segment.lane_line_list:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none',
                               style="stroke-miterlimit:4;stroke-dasharray:0.16,0.16;stroke-dashoffset:0")
-            # stroke-miterlimit:4;stroke-dasharray:0.08,0.16;stroke-dashoffset:0;stroke-width:0.02
 
+        # Draw left and right road boundary in Segment Straight
         self.draw_polygon(segment.left_line_polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
         self.draw_polygon(segment.right_line_polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
@@ -75,12 +82,14 @@ class Painter:
             final_end_angle = end_angle - 90
             final_start_angle = start_angle - 90
 
+        # Draw road surface in Segment Arc
         self.d.append(
             draw.Arc(segment.center_point.x_w, segment.center_point.y_w, math.fabs(segment.radius), final_start_angle,
                      final_end_angle,
                      cw=segment.direction_clockwise, stroke='black', stroke_width=track.track_width,
                      fill='none'))
 
+        # Draw left and right road boundary in Segment Arc
         self.d.append(draw.Arc(segment.center_point.x_w, segment.center_point.y_w,
                                math.fabs(segment.radius) - track.line_offset, final_start_angle,
                                final_end_angle, cw=segment.direction_clockwise, stroke='white',
@@ -91,6 +100,7 @@ class Painter:
                                final_end_angle, cw=segment.direction_clockwise, stroke='white',
                                stroke_width=DEFAULT_LINE_WIDTH, fill='none'))
 
+        # Draw lane markings in Segment Arc
         for i in range(1, int(track.lanes)):
             self.d.append(draw.Arc(segment.center_point.x_w, segment.center_point.y_w,
                                    math.fabs(segment.radius - track.track_width / 2 + DEFAULT_LANE_WIDTH * i),
@@ -124,31 +134,39 @@ class Painter:
         self.draw_point(segment.start_point_right)
 
     def draw_crosswalk(self, segment: Crosswalk, track: Track):
+        # Draw road surface in Segment Crosswalk
         self.draw_polygon(segment.track_ground_polygon, fill='#eeee00', stroke='black',
                           stroke_width=track.track_width)
+        # Draw road surface in Segment Arc
         self.draw_polygon(segment.left_line_polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
         self.draw_polygon(segment.right_line_polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
+        # Draw crosswalk-lines
         for polygon in segment.line_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=0.03, fill='none')
 
     def draw_intersection(self, segment: Intersection, track: Track):
 
+        # Draw road surface in Segment Intersection
         for polygon in segment.base_line_polygons:
             self.draw_polygon(polygon, fill='#eeee00', stroke='black', stroke_width=track.track_width)
 
+        # Draw road boundaries in Segment Intersection
         for polygon in segment.corner_line_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
+        # Draw Stop lines in Segment Intersection
         for polygon in segment.stop_line_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH * 2, fill='none')
 
+        # Draw lane markings in Segment Intersection
         if track.lanes > 1:
             for polygon in segment.center_line_polygons:
                 self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none',
                                   style="stroke-miterlimit:4;stroke-dasharray:0.16,0.16;stroke-dashoffset:0")
 
     def draw_traffic_island(self, segment: TrafficIsland):
+        # Draw road surface in Segment TrafficIsland
         self.d.append(draw.Lines(
             segment.background_polygon[0].x_w, segment.background_polygon[0].y_w,
             segment.background_polygon[1].x_w, segment.background_polygon[1].y_w,
@@ -161,21 +179,25 @@ class Painter:
             close=False,
             fill='black'))
 
+        # Draw road boundaries in Segment TrafficIsland
         for polygon in segment.line_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
+        # Draw crosswalk in Segment TrafficIsland
         for polygon in segment.crosswalk_lines_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=0.03, fill='none')
 
+        # Draw lane markings in Segment TrafficIsland
         for polygon in segment.lane_line_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none',
                               style="stroke-miterlimit:4;stroke-dasharray:0.16,0.16;stroke-dashoffset:0")
 
     def draw_parking_area(self, segment: ParkingArea, track: Track):
+        # Draw Straight road in Segment ParkingArea
         self.draw_straight(segment, track)
 
+        # Draw road and ParkingSpot boundary in Segment ParkingArea
         for polygon in segment.outline_polygon:
-            # Background
             self.d.append(draw.Lines(
                 polygon[0].x_w, polygon[0].y_w,
                 polygon[1].x_w, polygon[1].y_w,
@@ -183,12 +205,13 @@ class Painter:
                 polygon[3].x_w, polygon[3].y_w,
                 close=False,
                 fill='black'))
-            # Outline
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
+        # Draw ParkingSpot seperator
         for polygon in segment.spot_seperator_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
+        # Draw crosses in blocked ParkingSpots
         for polygon in segment.blocker_polygons:
             self.draw_polygon(polygon, stroke='white', stroke_width=DEFAULT_LINE_WIDTH, fill='none')
 
@@ -227,6 +250,11 @@ class Painter:
         elif isinstance(segment, Arc):
             self.draw_arc_verbose(segment)
 
+    """
+    draw_track is called from generator
+    Creating Background for generated tracks
+    start of road drawing
+    """
     def draw_track(self, track: Track):
         self.d = draw.Drawing(track.width, track.height, origin=track.origin, displayInline=False)
         self.d.setPixelScale(1000)

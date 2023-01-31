@@ -1,7 +1,7 @@
 # Copyright (C) 2022 twyleg
 import xml.etree.ElementTree as ET
-from track import *
-from errorhandling import ElementMissingException, AttributeMissingException
+from track_generator.track import *
+from track_generator.errorhandling import ElementMissingException, AttributeMissingException
 
 
 def read_track(xml_input_file_path: str) -> Track:

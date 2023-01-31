@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
+from track_generator.track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
 
 
 class ElementMissingException(Exception):
@@ -50,8 +50,6 @@ class LaneError(Exception):
 
 
 class TrackCheck:
-    def __init__(self):
-        pass
 
     @staticmethod
     def check_crosswalk(segment: Crosswalk):
