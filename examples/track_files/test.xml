@@ -1,0 +1,35 @@
+<TrackDefinition version="0.0.1">
+    <Size width="10.0" height="10.0" lanes="2"/>
+    <Origin x="0" y="0"/>
+    <Background color="#545454" opacity="1.0"/>
+    <Segments>
+        <Start x="0.5" y="0.5" direction_angle="90.0"/>
+        <Straight length="6.140"/>
+        <Turn direction="right" radius="1.0" radian="90.0"/>
+        <Intersection length="1.600" oneway="no" stopped_lanes="1"/>
+        <ParkingArea length="4.0">
+            <RightLots>
+                <ParkingLot start="0.0" depth="0.3" opening_ending_angle="60">
+                    <Spot type="free" length="0.3"/>
+                    <Spot type="blocked" length="0.7"/>
+                    <Spot type="occupied" length="0.7"/>
+                </ParkingLot>
+                <ParkingLot start="2.3" depth="0.3" opening_ending_angle="45">
+                    <Spot type="free" length="0.3"/>
+                    <Spot type="blocked" length="0.4"/>
+                    <Spot type="free" length="0.3"/>
+                </ParkingLot>
+            </RightLots>
+            <LeftLots>
+                <ParkingLot start="1.0" depth="0.3" opening_ending_angle="45">
+                    <Spot type="blocked" length="0.3"/>
+                    <Spot type="free" length="0.7"/>
+                </ParkingLot>
+            </LeftLots>
+        </ParkingArea>
+        <Crosswalk length="0.800"/>
+        <Turn direction="right" radius="1.0" radian="90.0"/>
+        <TrafficIsland island_width="1.0" crosswalk_length="0.0" curve_segment_length="1.0" curvature="1.0" left_lanes="1"/>
+        <Gap length="1.600"/>
+    </Segments>
+</TrackDefinition>

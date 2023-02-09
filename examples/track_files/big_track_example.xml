@@ -1,11 +1,11 @@
 <TrackDefinition version="0.0.1">
-    <Size width="10.0" height="10.0" lanes="4"/>
+    <Size width="20.0" height="22.0" lanes="4"/>
     <Origin x="0" y="0"/>
     <Background color="#545454" opacity="1.0"/>
     <Segments>
         <Start x="2" y="6" direction_angle="90.0"/>
-        <Straight length="12.280"/>
-        <Crosswalk length="0.800"/>
+        <Straight length="12.68"/>
+        <Crosswalk length="0.8"/>
         <Turn direction="right" radius="1.5" radian="90.0"/>
         <Straight length="12.500"/>
         <Turn direction="right" radius="1.5" radian="180"/>

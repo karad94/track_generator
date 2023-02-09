@@ -3,3 +3,5 @@ numpy
 drawSvg
 twine
 wheel
+setuptools
+PyQt5

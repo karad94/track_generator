@@ -175,7 +175,12 @@ def _read_intersection_element(intersection_element: ET.Element):
     if stopped_lanes is None and oneway != 'yes':
         raise AttributeMissingException('stopped_lanes', intersection_element)
 
-    ow = True if oneway == 'yes' else False
+    if oneway == 'yes' or oneway == 'Ja':
+        ow = True
+        stopped_lanes = 0
+
+    else:
+        ow = False
 
     return Intersection(float(length), ow, float(stopped_lanes))
 

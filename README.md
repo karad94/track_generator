@@ -31,14 +31,15 @@ to the corresponding result:
     python -m venv venv
     source venv/bin/acitvate.bash
     pip install -r requirements.txt
+    python3 setup.py install
 
 # Run with example track definition:
 
-    python track_generator/starter.py generate_track YOUR_TRACK_DEFINITION
+    track_generator generate_track YOUR_TRACK_DEFINITION
 
 # Generating Gazebo Model
     
-    python track_generator/starter.py generate_track --gazebo YOUR_TRACK_DEFINITION
+    track_generator generate_track --gazebo YOUR_TRACK_DEFINITION
 
 # Run Track in Gazebo
 
