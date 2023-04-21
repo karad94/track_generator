@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from track_generator.track import Track, Start, Straight, Arc, Crosswalk, Intersection, Gap, ParkingArea, TrafficIsland
+from track_generator.track import *
 
 
 class ElementMissingException(Exception):
@@ -17,7 +17,7 @@ class AttributeMissingException(Exception):
         self.element = element
 
     def __str__(self):
-        return f'AttributeMissingException: missing attribute="{self.attribute_name}" in element "{self.element.tag}""'
+        return f'AttributeMissingException: missing attribute="{self.attribute_name}" in element "{self.element.tag}"'
 
 
 class ZeroLength(Exception):

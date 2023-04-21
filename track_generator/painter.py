@@ -14,7 +14,7 @@ DEFAULT_LINE_OFFSET = DEFAULT_LANE_WIDTH - DEFAULT_LINE_WIDTH
 
 class Painter:
     """
-    Usage of Package drawSvg to draw road with the coordinates that were calculated in track.py
+    Usage of Package drawSvg to draw Road with the coordinates that were calculated in track.py
     Each segment will be drawn in his own function.
     """
     def __init__(self):

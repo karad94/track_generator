@@ -31,7 +31,7 @@ def generate_track(track_files: List[str], root_output_directory: str, generate_
     """
     track_output_directories: List[str] = []
     for track_file in track_files:
-        # read track definition and start of coordinate calculation
+        # Read track definition and start of coordinate calculation
         track = xml_reader.read_track(track_file)
         track.calc(track)
 

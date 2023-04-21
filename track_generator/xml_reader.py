@@ -42,7 +42,7 @@ def _read_size(root: ET.Element) -> Tuple[float, float, float]:
     if height is None:
         raise AttributeMissingException('height', size_element)
 
-    if height is None:
+    if lanes is None:
         raise AttributeMissingException('lanes', size_element)
 
     return float(width), float(height), float(lanes)
