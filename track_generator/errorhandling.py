@@ -46,7 +46,7 @@ class LaneError(Exception):
         self.lanes = int(track.lanes)
 
     def __str__(self):
-        return f'IntersectionError: Number of "{self.attribute}" in Segment "{self.segment_name}" must be between 0 and {self.lanes}'
+        return f'LaneError: Number of "{self.attribute}" in Segment "{self.segment_name}" must be between 0 and {self.lanes}'
 
 
 class TrackCheck:
